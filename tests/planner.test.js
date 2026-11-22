@@ -119,6 +119,23 @@
     eq(C.applyCommand('בלי יום ו׳', P.defaultOptions()).options.excludedDays, [5]);
   });
 
+  test('chat: several days in one request', function () {
+    var r = C.applyCommand('בלי שישי ושבת', P.defaultOptions());
+    ok(r.ok); eq(r.options.excludedDays, [5, 6]);
+    eq(r.reply, 'הוצאתי את הימים שישי ושבת מהתוכנית.');
+    eq(C.applyCommand('בלי סוף שבוע', P.defaultOptions()).options.excludedDays, [5, 6]);
+    eq(C.applyCommand('ללא סופ״ש', P.defaultOptions()).options.excludedDays, [5, 6]);
+    eq(C.applyCommand('בלי ראשון, שני ורביעי', P.defaultOptions()).options.excludedDays, [0, 1, 3]);
+    eq(C.applyCommand('בלי יום שישי', P.defaultOptions()).reply, 'הוצאתי את יום שישי מהתוכנית.', 'single-day reply unchanged');
+    var add = C.applyCommand('הוסף 2 שעות בשני ורביעי', Object.assign(P.defaultOptions(), { excludedDays: [3] }));
+    ok(add.ok); eq(add.options.extraHours, { 1: 2, 3: 2 }); eq(add.options.excludedDays, []);
+    eq(add.reply, 'הוספתי 2 שעות בכל אחד מהימים שני ורביעי לתוכנית הזאת. הזמינות הקבועה שלך לא השתנתה.');
+    eq(C.applyCommand('הוסף 2 שעות ביום חמישי', P.defaultOptions()).reply,
+      'הוספתי 2 שעות ביום חמישי לתוכנית הזאת. הזמינות הקבועה שלך לא השתנתה.', 'single-day add reply unchanged');
+    eq(C.applyCommand('מקסימום 3 שעות ביום', P.defaultOptions()).options.maxPerDay, 3, 'max per day still works');
+    eq(C.applyCommand('תוכנית שבועית', P.defaultOptions()).options.excludedDays, [], 'שבועית is not סוף שבוע');
+  });
+
   test('chat: max hours per day', function () {
     var r = C.applyCommand('מקסימום 3 שעות ביום', P.defaultOptions());
     ok(r.ok); eq(r.options.maxPerDay, 3);

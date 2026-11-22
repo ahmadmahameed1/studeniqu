@@ -10,18 +10,32 @@
   var HELP =
     'אפשר לבקש:\n' +
     '• "בלי יום שישי": לא לתכנן ביום מסוים\n' +
+    '• "בלי שישי ושבת" או "בלי סוף שבוע": כמה ימים בבת אחת\n' +
     '• "מקסימום 3 שעות ביום": להגביל את שעות הלמידה ביום\n' +
     '• "הוסף 2 שעות ביום חמישי": להוסיף זמן ליום מסוים (רק בתוכנית הזאת)\n' +
     '• "תוכנית יומית" או "תוכנית שבועית"\n' +
     '• "התחל מחדש": לבטל את כל השינויים';
 
-  function findDay(text) {
+  /* Every weekday mentioned in the text, in week order. Handles "ו"/"ב" prefixes and "סוף שבוע". */
+  function findDays(text) {
+    var found = [];
     for (var i = 0; i < DAY_WORDS.length; i++) {
       var full = DAY_WORDS[i][0], letter = DAY_WORDS[i][1];
-      if (new RegExp('(^|[\\s"\'״׳])(יום\\s+)?' + full + '($|[\\s.,!?])').test(text)) return i;
-      if (new RegExp('יום\\s+' + letter + '[׳\']').test(text)) return i;
+      if (new RegExp('(^|[\\s"\'״׳,])ו?ב?(יום\\s+)?' + full + '($|[\\s.,!?])').test(text) ||
+          new RegExp('יום\\s+' + letter + '[׳\']').test(text)) found.push(i);
     }
-    return -1;
+    if (/סוף\s*ה?שבוע|סופ["״]?ש(\s|$)/.test(text)) {
+      [5, 6].forEach(function (d) { if (found.indexOf(d) === -1) found.push(d); });
+      found.sort();
+    }
+    return found;
+  }
+
+  /* "יום שישי" for one day, "הימים שישי ושבת" / "הימים ראשון, שני ורביעי" for several. */
+  function dayList(days, names) {
+    var n = days.map(function (d) { return names[d]; });
+    if (n.length === 1) return 'יום ' + n[0];
+    return 'הימים ' + n.slice(0, -1).join(', ') + ' ו' + n[n.length - 1];
   }
 
   function findNumber(text) {
@@ -57,30 +71,33 @@
       return { ok: true, options: opts, reply: 'עברתי לתוכנית שבועית (7 ימים מהיום).' };
     }
 
-    if (/(מקסימום|לכל היותר|עד)\s*\d/.test(t) && /ביום|ליום/.test(t) && findDay(t) === -1) {
+    if (/(מקסימום|לכל היותר|עד)\s*\d/.test(t) && /ביום|ליום/.test(t) && findDays(t).length === 0) {
       var max = findNumber(t);
       opts.maxPerDay = max;
       return { ok: true, options: opts, reply: 'הגבלתי ל-' + max + ' שעות למידה ביום לכל היותר.' };
     }
 
     if (/הוסף|תוסיף|להוסיף/.test(t)) {
-      var hours = findNumber(t), day = findDay(t);
-      if (hours == null || day === -1) {
+      var hours = findNumber(t), addDays = findDays(t);
+      if (hours == null || !addDays.length) {
         return { ok: false, options: opts, reply: 'לא הבנתי כמה שעות ובאיזה יום. לדוגמה: "הוסף 2 שעות ביום חמישי".' };
       }
-      opts.extraHours[day] = (Number(opts.extraHours[day]) || 0) + hours;
-      var ex = opts.excludedDays.indexOf(day);
-      if (ex !== -1) opts.excludedDays.splice(ex, 1);
-      return { ok: true, options: opts, reply: 'הוספתי ' + hours + ' שעות ביום ' + names[day] + ' לתוכנית הזאת. הזמינות הקבועה שלך לא השתנתה.' };
+      addDays.forEach(function (day) {
+        opts.extraHours[day] = (Number(opts.extraHours[day]) || 0) + hours;
+        var ex = opts.excludedDays.indexOf(day);
+        if (ex !== -1) opts.excludedDays.splice(ex, 1);
+      });
+      var where = addDays.length === 1 ? 'ב' + dayList(addDays, names) : 'בכל אחד מ' + dayList(addDays, names);
+      return { ok: true, options: opts, reply: 'הוספתי ' + hours + ' שעות ' + where + ' לתוכנית הזאת. הזמינות הקבועה שלך לא השתנתה.' };
     }
 
     if (/בלי|ללא|לא ללמוד|פנוי/.test(t)) {
-      var d = findDay(t);
-      if (d === -1) {
+      var offDays = findDays(t);
+      if (!offDays.length) {
         return { ok: false, options: opts, reply: 'לא הבנתי איזה יום. לדוגמה: "בלי יום שישי".' };
       }
-      if (opts.excludedDays.indexOf(d) === -1) opts.excludedDays.push(d);
-      return { ok: true, options: opts, reply: 'הוצאתי את יום ' + names[d] + ' מהתוכנית.' };
+      offDays.forEach(function (d) { if (opts.excludedDays.indexOf(d) === -1) opts.excludedDays.push(d); });
+      return { ok: true, options: opts, reply: 'הוצאתי את ' + dayList(offDays, names) + ' מהתוכנית.' };
     }
 
     return { ok: false, options: opts, reply: 'לא הבנתי את הבקשה.\n' + HELP };
