@@ -85,6 +85,7 @@ input:focus { outline: 2px solid var(--primary); outline-offset: 1px; }
 .task-title { font-weight: 600; }
 .task-meta { font-size: .85rem; color: var(--muted); }
 .task-meta .late { color: var(--warn); font-weight: 600; }
+.task-meta .soon { color: var(--text); font-weight: 600; }
 .task-actions { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
 .task-actions select { font: inherit; font-size: .85rem; color: var(--text); background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 2px 6px; }
 .subtasks { list-style: none; padding: 0; margin: 8px 0 0; }

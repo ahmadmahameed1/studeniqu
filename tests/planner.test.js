@@ -38,6 +38,19 @@
     eq(P.remainingHours(task('a', TODAY, null)), 0);
   });
 
+  test('days until due and countdown label', function () {
+    eq(P.daysUntil('2026-11-25', TODAY), 3);
+    eq(P.daysUntil('2026-11-20', TODAY), -2);
+    eq(P.daysUntil('2027-01-01', '2026-12-31'), 1, 'across year end');
+    eq(P.daysUntil('2027-03-29', '2027-03-26'), 3, 'across a DST change');
+    eq(P.dueLabel(task('a', TODAY, 1), TODAY), 'היום');
+    eq(P.dueLabel(task('a', '2026-11-23', 1), TODAY), 'מחר');
+    eq(P.dueLabel(task('a', '2026-11-27', 1), TODAY), 'בעוד 5 ימים');
+    eq(P.dueLabel(task('a', '2026-11-21', 1), TODAY), 'באיחור של יום');
+    eq(P.dueLabel(task('a', '2026-11-19', 1), TODAY), 'באיחור של 3 ימים');
+    eq(P.dueLabel(task('a', '2026-11-19', 1, { status: 'done' }), TODAY), '', 'done tasks have no countdown');
+  });
+
   test('weekly plan covers 7 days and respects capacity', function () {
     var plan = P.buildPlan([task('a', '2026-11-28', 30)], AVAIL, { mode: 'week' }, TODAY);
     eq(plan.days.length, 7);
