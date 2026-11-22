@@ -208,6 +208,38 @@
     eq(c.hoursByDay, []);
   });
 
+  var S = window.Studeniqu.search;
+  var SEARCH_TASKS = [
+    task('Exercise 3', TODAY, 2, { title: 'תרגיל 3', course: 'מבני נתונים' }),
+    task('essay', TODAY, 3, { title: 'Final Essay', course: 'English B' }),
+    task('lab', TODAY, 1, { title: 'דו"ח מעבדה', course: '' })
+  ];
+  function titles(list) { return list.map(function (t) { return t.title; }); }
+
+  test('search: empty query returns all tasks', function () {
+    eq(titles(S.filterTasks(SEARCH_TASKS, '')), ['תרגיל 3', 'Final Essay', 'דו"ח מעבדה']);
+    eq(titles(S.filterTasks(SEARCH_TASKS, '   ')), ['תרגיל 3', 'Final Essay', 'דו"ח מעבדה']);
+  });
+
+  test('search: matches part of the task title', function () {
+    eq(titles(S.filterTasks(SEARCH_TASKS, 'תרגיל')), ['תרגיל 3']);
+    eq(titles(S.filterTasks(SEARCH_TASKS, 'מעבדה')), ['דו"ח מעבדה']);
+  });
+
+  test('search: matches part of the course name', function () {
+    eq(titles(S.filterTasks(SEARCH_TASKS, 'נתונים')), ['תרגיל 3']);
+  });
+
+  test('search: ignores letter case and surrounding spaces', function () {
+    eq(titles(S.filterTasks(SEARCH_TASKS, '  english ')), ['Final Essay']);
+    eq(titles(S.filterTasks(SEARCH_TASKS, 'ESSAY')), ['Final Essay']);
+  });
+
+  test('search: no match returns an empty list and keeps the input unchanged', function () {
+    eq(S.filterTasks(SEARCH_TASKS, 'פיזיקה'), []);
+    eq(SEARCH_TASKS.length, 3);
+  });
+
   var failed = results.filter(function (r) { return !r.ok; }).length;
   var ul = document.getElementById('results');
   results.forEach(function (r) {
