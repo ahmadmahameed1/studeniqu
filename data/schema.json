@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "STUDENIQU export",
+  "description": "The format of the file the app exports and imports (ייצוא / ייבוא נתונים).",
+  "type": "object",
+  "required": ["app", "version", "tasks", "availability"],
+  "properties": {
+    "app": { "const": "studeniqu" },
+    "version": { "const": 1 },
+    "exportedAt": { "type": "string", "format": "date-time" },
+    "availability": {
+      "description": "Free study hours per weekday. Keys 0-6, 0 = Sunday.",
+      "type": "object",
+      "patternProperties": { "^[0-6]$": { "type": "number", "minimum": 0, "maximum": 24 } },
+      "additionalProperties": false
+    },
+    "tasks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "due", "status"],
+        "properties": {
+          "id": { "type": "string" },
+          "title": { "type": "string", "minLength": 1, "maxLength": 120 },
+          "course": { "type": "string", "maxLength": 80 },
+          "due": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+          "estHours": { "type": ["number", "null"], "minimum": 0, "maximum": 200 },
+          "status": { "enum": ["todo", "doing", "done"] },
+          "subtasks": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["title", "done"],
+              "properties": {
+                "title": { "type": "string", "minLength": 1, "maxLength": 120 },
+                "done": { "type": "boolean" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "approvedPlan": {
+      "description": "The last plan the student approved, or null.",
+      "type": ["object", "null"],
+      "properties": {
+        "mode": { "enum": ["day", "week"] },
+        "startDate": { "type": "string" },
+        "approvedAt": { "type": "string", "format": "date-time" },
+        "totalPlanned": { "type": "number" },
+        "days": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "date": { "type": "string" },
+              "capacity": { "type": "number" },
+              "sessions": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "taskId": { "type": "string" },
+                    "title": { "type": "string" },
+                    "course": { "type": "string" },
+                    "hours": { "type": "number" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

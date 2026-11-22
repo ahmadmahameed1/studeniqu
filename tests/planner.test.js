@@ -131,6 +131,55 @@
     ok(!r2.ok);
   });
 
+  var D = window.Studeniqu.data;
+  var SAMPLE = window.Studeniqu.sampleData;
+
+  test('sample data loads with dates relative to today', function () {
+    var s = D.fromSample(SAMPLE, TODAY);
+    eq(s.tasks.length, SAMPLE.tasks.length);
+    eq(s.tasks[0].due, '2026-11-24');
+    eq(s.tasks[0].course, 'מבני נתונים');
+    eq(s.approvedPlan, null);
+    ok(s.tasks.some(function (t) { return P.isOverdue(t, TODAY); }), 'sample has an overdue task');
+  });
+
+  test('sample data is valid for import', function () {
+    var s = D.fromSample(SAMPLE, TODAY);
+    var back = D.parseImport(D.toExport(s));
+    eq(back.tasks, s.tasks);
+    eq(back.availability, { 0: 3, 1: 2, 2: 3, 3: 2, 4: 3, 5: 4, 6: 0 });
+  });
+
+  test('sample data produces a plan with a shortfall', function () {
+    var s = D.fromSample(SAMPLE, TODAY);
+    var plan = P.buildPlan(s.tasks, s.availability, { mode: 'week' }, TODAY);
+    ok(plan.totalPlanned > 0);
+    eq(plan.missingEstimate.map(function (m) { return m.taskId; }), ['sample-5']);
+  });
+
+  test('import rejects foreign or broken files', function () {
+    function throws(obj) { try { D.parseImport(obj); } catch (e) { return true; } return false; }
+    ok(throws(null));
+    ok(throws({ app: 'other', version: 1, tasks: [] }));
+    ok(throws({ app: 'studeniqu', version: 2, tasks: [] }));
+    ok(throws({ app: 'studeniqu', version: 1, tasks: [{ title: '', due: '2026-11-22' }] }));
+    ok(throws({ app: 'studeniqu', version: 1, tasks: [{ title: 'x', due: '22/11/2026' }] }));
+    ok(throws({ app: 'studeniqu', version: 1, tasks: [{ title: 'x', due: '2026-11-22', estHours: -3 }] }));
+  });
+
+  test('import cleans values', function () {
+    var r = D.parseImport({ app: 'studeniqu', version: 1, availability: { 0: 30, 1: 2 },
+      tasks: [{ id: 'a', title: '  x  ', due: '2026-11-22', status: 'weird', subtasks: [{ title: 's', done: 'yes' }, null] },
+              { id: 'a', title: 'y', due: '2026-11-23', estHours: '3' }] });
+    eq(r.tasks[0].title, 'x');
+    eq(r.tasks[0].status, 'todo');
+    eq(r.tasks[0].subtasks, [{ title: 's', done: false }]);
+    eq(r.tasks[1].id, 'a-2', 'duplicate id renamed');
+    eq(r.tasks[1].estHours, 3);
+    eq(r.availability[0], 0, 'out-of-range hours reset');
+    eq(r.availability[1], 2);
+  });
+
   var failed = results.filter(function (r) { return !r.ok; }).length;
   var ul = document.getElementById('results');
   results.forEach(function (r) {

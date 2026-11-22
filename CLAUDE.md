@@ -16,6 +16,8 @@ Current stage: first working version of the two core capabilities (tasks and stu
 - `index.html`, `css/style.css`: UI (Hebrew, RTL, light and dark).
 - `js/planner.js`: pure planning functions (`buildPlan`, `missedSessions`, date helpers). No DOM access.
 - `js/chat.js`: pure Hebrew command parser (`applyCommand`) that returns new plan options. No DOM access.
+- `js/data.js`: pure data functions (`fromSample`, `toExport`, `parseImport`). Imports are validated against the shape in `data/schema.json`.
+- `data/`: `sample-data.js` (sample student data, dates relative to today), `schema.json` (export/import format), `README.md` (data model in Hebrew). Keep all three in sync when the data model changes.
 - `js/app.js`: state, `localStorage` persistence (key `studeniqu.v1`) and rendering.
 - `tests/tests.html` + `tests/planner.test.js`: browser tests for planner and chat.
 

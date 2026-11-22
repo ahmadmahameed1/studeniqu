@@ -10,6 +10,13 @@
   <header class="topbar">
     <h1>STUDENIQU</h1>
     <p class="tagline">ניהול משימות ותכנון למידה</p>
+    <div class="toolbar" aria-label="נתונים">
+      <button type="button" id="sample-btn" class="btn">טעינת נתוני דוגמה</button>
+      <button type="button" id="export-btn" class="btn">ייצוא נתונים</button>
+      <button type="button" id="import-btn" class="btn">ייבוא נתונים</button>
+      <input type="file" id="import-file" accept=".json,application/json" hidden>
+      <span id="data-msg" class="muted" role="status"></span>
+    </div>
   </header>
 
   <main>
@@ -91,6 +98,8 @@
 
   <script src="js/planner.js"></script>
   <script src="js/chat.js"></script>
+  <script src="js/data.js"></script>
+  <script src="data/sample-data.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

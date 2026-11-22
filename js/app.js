@@ -358,6 +358,58 @@
   $('approve-btn').addEventListener('click', approve);
   $('reject-btn').addEventListener('click', reject);
 
+  /* ---------- data: sample, export, import ---------- */
+
+  var Data = window.Studeniqu.data;
+
+  function dataMsg(text) { $('data-msg').textContent = text; }
+
+  function replaceState(next) {
+    state = next;
+    draft = null;
+    $('draft').hidden = true;
+    resetForm();
+    save();
+    renderAvailability();
+    render();
+  }
+
+  $('sample-btn').addEventListener('click', function () {
+    if (state.tasks.length && !confirm('נתוני הדוגמה יחליפו את הנתונים הקיימים בדפדפן. להמשיך?')) return;
+    replaceState(Data.fromSample(window.Studeniqu.sampleData, today()));
+    dataMsg('נטענו נתוני דוגמה.');
+  });
+
+  $('export-btn').addEventListener('click', function () {
+    var blob = new Blob([JSON.stringify(Data.toExport(state), null, 2)], { type: 'application/json' });
+    var a = el('a', { href: URL.createObjectURL(blob), download: 'studeniqu-' + today() + '.json' });
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+    dataMsg('הנתונים יוצאו לקובץ.');
+  });
+
+  $('import-btn').addEventListener('click', function () { $('import-file').click(); });
+
+  $('import-file').addEventListener('change', function (e) {
+    var file = e.target.files[0];
+    e.target.value = '';
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function () {
+      try {
+        var next = Data.parseImport(JSON.parse(reader.result));
+        if (state.tasks.length && !confirm('הייבוא יחליף את הנתונים הקיימים (' + next.tasks.length + ' משימות בקובץ). להמשיך?')) return;
+        replaceState(next);
+        dataMsg('יובאו ' + next.tasks.length + ' משימות.');
+      } catch (err) {
+        dataMsg('הייבוא נכשל: ' + (err instanceof SyntaxError ? 'הקובץ אינו JSON תקין.' : err.message));
+      }
+    };
+    reader.readAsText(file);
+  });
+
   renderAvailability();
   render();
 })();
