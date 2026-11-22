@@ -6,12 +6,29 @@ Guidance for Claude Code when working in this repository.
 
 STUDENIQU is an academic project (team: Ahmad Mahameed, Adyan Nujidat, Gizal Gudi): an app that helps university and college students manage academic tasks and deadlines and get an AI-proposed daily or weekly study plan that the student approves.
 
-Current stage: **product specification only**. There is no application code yet.
+Current stage: first working version of the two core capabilities (tasks and study planning). Static site, no build step and no dependencies.
 
 ## Repository layout
 
-- `README.md`: short project overview (Hebrew, RTL).
+- `README.md`: project overview and how to run (Hebrew, RTL).
 - `docs/SPEC.md`: product spec (1 Nov 2026, Hebrew, RTL), the source of truth for scope and decisions.
+- `docs/PLAN.md`: implementation plan for the current version.
+- `index.html`, `css/style.css`: UI (Hebrew, RTL, light and dark).
+- `js/planner.js`: pure planning functions (`buildPlan`, `missedSessions`, date helpers). No DOM access.
+- `js/chat.js`: pure Hebrew command parser (`applyCommand`) that returns new plan options. No DOM access.
+- `js/app.js`: state, `localStorage` persistence (key `studeniqu.v1`) and rendering.
+- `tests/tests.html` + `tests/planner.test.js`: browser tests for planner and chat.
+
+## Code conventions
+
+- Plain ES5-style classic scripts sharing the `window.Studeniqu` namespace, so `index.html` opens straight from disk (ES modules would not load over `file://`).
+- Keep planning and chat logic pure and covered by tests; keep DOM code in `app.js`.
+- Build DOM with `textContent`, never `innerHTML` with user data.
+- The planner is a local algorithm, not an AI model. Never commit API keys; the repo is public.
+
+## Testing
+
+Open `tests/tests.html` in a browser (via a local static server if `file://` blocks scripts). All tests must pass before pushing.
 
 ## Branches
 
