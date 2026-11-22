@@ -119,6 +119,48 @@ input:focus { outline: 2px solid var(--primary); outline-offset: 1px; }
 .chat-form { display: flex; gap: 8px; }
 .chat-form input { flex: 1; }
 
+/* ---------- charts (experimental) ---------- */
+:root {
+  --series-1: #2a78d6;
+  --chart-grid: #e1e0d9;
+  --chart-axis: #c3c2b7;
+  --chart-muted: #898781;
+  --chart-capacity: #eef1fb;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --series-1: #3987e5;
+    --chart-grid: #2c2c2a;
+    --chart-axis: #383835;
+    --chart-capacity: #232a38;
+  }
+}
+.charts-card { margin-bottom: 16px; }
+.charts-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+.charts-head h2 { margin: 0; }
+.charts-controls { display: flex; gap: 12px; flex-wrap: wrap; }
+.badge.experimental { background: var(--warn-bg); color: var(--warn); border: 1px solid var(--warn); }
+.charts-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 12px; }
+.chart { margin: 0; min-width: 0; }
+.chart figcaption { font-weight: 600; font-size: .95rem; margin-bottom: 6px; }
+.chart figcaption .muted { font-weight: 400; font-size: .8rem; }
+/* SVG coordinates are laid out right-to-left by hand; ltr keeps text-anchor literal. */
+.chart-svg { width: 100%; height: auto; display: block; overflow: visible; direction: ltr; }
+.chart-svg .bar { fill: var(--series-1); }
+.chart-svg .capacity { fill: var(--chart-capacity); }
+.chart-svg .grid { stroke: var(--chart-grid); stroke-width: 1; }
+.chart-svg .baseline { stroke: var(--chart-axis); stroke-width: 1; }
+.chart-svg .tick { fill: var(--chart-muted); font-size: 11px; }
+.chart-svg .label { fill: var(--muted); font-size: 12px; }
+.chart-svg .value { fill: var(--text); font-size: 12px; font-weight: 600; }
+.chart-svg .hit { fill: transparent; }
+.chart-svg .mark:hover .hit, .chart-svg .mark:focus .hit { fill: var(--chip); }
+.chart-svg .mark:focus { outline: none; }
+.chart-table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+.chart-table th, .chart-table td { text-align: start; padding: 4px 6px; border-bottom: 1px solid var(--border); }
+.small { font-size: .8rem; margin: 8px 0 0; }
+@media (max-width: 860px) { .charts-grid { grid-template-columns: 1fr; } }
+
 .footer { max-width: 1200px; margin: 0 auto; padding: 0 16px 24px; font-size: .85rem; }
 
 @media (max-width: 860px) {

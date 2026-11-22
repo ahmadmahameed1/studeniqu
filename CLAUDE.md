@@ -18,6 +18,7 @@ Current stage: first working version of the two core capabilities (tasks and stu
 - `js/chat.js`: pure Hebrew command parser (`applyCommand`) that returns new plan options. No DOM access.
 - `js/data.js`: pure data functions (`fromSample`, `toExport`, `parseImport`). Imports are validated against the shape in `data/schema.json`.
 - `data/`: `sample-data.js` (sample student data, dates relative to today), `schema.json` (export/import format), `README.md` (data model in Hebrew). Keep all three in sync when the data model changes.
+- `js/charts.js` (experimental): pure `chartData` plus inline-SVG rendering with a table view. Single-series bars in `--series-1`; text uses text colors, not the series color. Show/table preferences in `localStorage` key `studeniqu.chartsPrefs`.
 - `js/app.js`: state, `localStorage` persistence (key `studeniqu.v1`) and rendering.
 - `tests/tests.html` + `tests/planner.test.js`: browser tests for planner and chat.
 
@@ -36,6 +37,7 @@ Open `tests/tests.html` in a browser (via a local static server if `file://` blo
 
 - `main`: stable, reviewed content.
 - `dev`: ongoing work. Make changes here and merge into `main` through a pull request.
+- `feature/*`: experimental features branched from `dev` (e.g. `feature/charts-experimental`). Merge into `dev` only after the team approves.
 
 ## Writing rules for the spec
 

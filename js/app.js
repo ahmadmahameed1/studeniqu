@@ -336,11 +336,34 @@
     $('stat-hours').textContent = state.approvedPlan ? state.approvedPlan.totalPlanned : 0;
   }
 
+  /* Experimental charts: shown/hidden and table view are per-browser preferences. */
+  var PREF_KEY = 'studeniqu.chartsPrefs';
+  function chartPrefs() {
+    try { return Object.assign({ show: true, table: false }, JSON.parse(localStorage.getItem(PREF_KEY)) || {}); }
+    catch (e) { return { show: true, table: false }; }
+  }
+  function renderCharts() {
+    if (!window.Studeniqu.charts) return;
+    var prefs = chartPrefs();
+    $('charts-toggle').checked = prefs.show;
+    $('charts-table').checked = prefs.table;
+    $('charts-body').hidden = !prefs.show;
+    $('charts-table').disabled = !prefs.show;
+    if (prefs.show) window.Studeniqu.charts.renderAll(state, today(), prefs.table);
+  }
+  function setChartPref(key, value) {
+    var prefs = chartPrefs();
+    prefs[key] = value;
+    try { localStorage.setItem(PREF_KEY, JSON.stringify(prefs)); } catch (e) { /* ignore */ }
+    renderCharts();
+  }
+
   function render() {
     renderSummary();
     renderTasks();
     renderApproved();
     renderReplan();
+    renderCharts();
   }
 
   /* ---------- wiring ---------- */
@@ -357,6 +380,8 @@
   $('chat-form').addEventListener('submit', onChat);
   $('approve-btn').addEventListener('click', approve);
   $('reject-btn').addEventListener('click', reject);
+  $('charts-toggle').addEventListener('change', function (e) { setChartPref('show', e.target.checked); });
+  $('charts-table').addEventListener('change', function (e) { setChartPref('table', e.target.checked); });
 
   /* ---------- data: sample, export, import ---------- */
 

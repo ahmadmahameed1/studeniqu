@@ -26,6 +26,31 @@
       <div class="stat"><span class="stat-num" id="stat-hours">0</span><span class="stat-label">שעות בתוכנית המאושרת</span></div>
     </section>
 
+    <section class="card charts-card" aria-labelledby="charts-title">
+      <div class="charts-head">
+        <h2 id="charts-title">גרפים <span class="badge experimental">ניסיוני</span></h2>
+        <div class="charts-controls">
+          <label class="inline"><input type="checkbox" id="charts-toggle" checked> הצגת גרפים</label>
+          <label class="inline"><input type="checkbox" id="charts-table"> תצוגת טבלה</label>
+        </div>
+      </div>
+      <div id="charts-body" class="charts-grid">
+        <figure class="chart">
+          <figcaption>שעות מתוכננות לפי יום <span class="muted">(התוכנית המאושרת; הרקע = שעות פנויות)</span></figcaption>
+          <div id="chart-hours"></div>
+        </figure>
+        <figure class="chart">
+          <figcaption>משימות לפי סטטוס</figcaption>
+          <div id="chart-status"></div>
+        </figure>
+        <figure class="chart">
+          <figcaption>שעות למידה שנותרו לפי קורס</figcaption>
+          <div id="chart-course"></div>
+        </figure>
+      </div>
+      <p class="muted small">מאפיין ניסיוני: הגרפים מחושבים מהנתונים שבדפדפן ועשויים להשתנות.</p>
+    </section>
+
     <div id="replan-banner" class="banner" hidden>
       <span id="replan-text"></span>
       <button type="button" id="replan-btn" class="btn primary">להציע תכנון מחדש</button>
@@ -100,6 +125,7 @@
   <script src="js/chat.js"></script>
   <script src="js/data.js"></script>
   <script src="data/sample-data.js"></script>
+  <script src="js/charts.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>
