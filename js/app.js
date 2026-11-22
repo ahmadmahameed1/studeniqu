@@ -120,10 +120,12 @@
     var overdue = P.isOverdue(task, t0);
     var subs = task.subtasks || [];
     var doneSubs = subs.filter(function (s) { return s.done; }).length;
+    var countdown = P.dueLabel(task, t0);
+    var soon = !overdue && countdown && P.daysUntil(task.due, t0) <= 1;
 
     var meta = el('div', { class: 'task-meta' }, [
       el('span', { text: (task.course ? task.course + ' · ' : '') + 'הגשה: ' + formatDate(task.due) }),
-      overdue ? el('span', { class: 'late', text: ' · באיחור' }) : null,
+      countdown ? el('span', { class: overdue ? 'late' : soon ? 'soon' : '', text: ' · ' + countdown }) : null,
       el('span', { text: ' · ' + (task.estHours > 0 ? task.estHours + ' שעות' : 'חסר משך') }),
       subs.length ? el('span', { text: ' · ' + doneSubs + '/' + subs.length + ' תתי-משימות' }) : null
     ]);
