@@ -39,6 +39,21 @@
     return task.status !== 'done' && !!task.due && task.due < todayISO;
   }
 
+  /* Whole days from todayISO to iso (negative when iso is in the past). */
+  function daysUntil(iso, todayISO) {
+    return Math.round((parseISO(iso) - parseISO(todayISO)) / 86400000);
+  }
+
+  /* Short Hebrew countdown to a task's due date, or '' when not relevant. */
+  function dueLabel(task, todayISO) {
+    if (task.status === 'done' || !task.due) return '';
+    var n = daysUntil(task.due, todayISO);
+    if (n === 0) return 'היום';
+    if (n === 1) return 'מחר';
+    if (n > 1) return 'בעוד ' + n + ' ימים';
+    return n === -1 ? 'באיחור של יום' : 'באיחור של ' + (-n) + ' ימים';
+  }
+
   function defaultOptions() {
     return { mode: 'week', excludedDays: [], maxPerDay: null, extraHours: {} };
   }
@@ -131,6 +146,8 @@
     weekday: weekday,
     remainingHours: remainingHours,
     isOverdue: isOverdue,
+    daysUntil: daysUntil,
+    dueLabel: dueLabel,
     defaultOptions: defaultOptions,
     buildPlan: buildPlan,
     missedSessions: missedSessions
