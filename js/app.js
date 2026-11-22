@@ -187,8 +187,10 @@
   function renderTasks() {
     var list = $('task-list');
     list.textContent = '';
-    sortedTasks().forEach(function (t) { list.appendChild(renderTask(t)); });
+    var shown = window.Studeniqu.search.filterTasks(sortedTasks(), $('task-search').value);
+    shown.forEach(function (t) { list.appendChild(renderTask(t)); });
     $('task-empty').hidden = state.tasks.length > 0;
+    $('task-no-results').hidden = !(state.tasks.length > 0 && shown.length === 0);
   }
 
   /* ---------- availability ---------- */
@@ -372,6 +374,7 @@
 
   $('task-form').addEventListener('submit', onSubmitTask);
   $('task-cancel').addEventListener('click', resetForm);
+  $('task-search').addEventListener('input', renderTasks);
   $('propose-btn').addEventListener('click', function () {
     propose(null, 'זו ההצעה שלי לפי המועדים והזמינות שלך. אפשר לבקש שינוי כאן.\n' + Chat.HELP);
   });

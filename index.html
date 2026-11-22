@@ -71,8 +71,12 @@
             <button type="button" class="btn" id="task-cancel" hidden>ביטול עריכה</button>
           </div>
         </form>
+        <label class="task-search">חיפוש משימות
+          <input id="task-search" type="search" maxlength="80" placeholder="שם משימה או קורס">
+        </label>
         <ul id="task-list" class="task-list"></ul>
         <p id="task-empty" class="muted">עדיין אין משימות.</p>
+        <p id="task-no-results" class="muted" hidden>לא נמצאו משימות שמתאימות לחיפוש.</p>
       </section>
 
       <!-- Planner -->
@@ -124,6 +128,7 @@
   <script src="js/planner.js"></script>
   <script src="js/chat.js"></script>
   <script src="js/data.js"></script>
+  <script src="js/search.js"></script>
   <script src="data/sample-data.js"></script>
   <script src="js/charts.js"></script>
   <script src="js/app.js"></script>

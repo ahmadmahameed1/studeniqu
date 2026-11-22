@@ -17,6 +17,7 @@ Current stage: first working version of the two core capabilities (tasks and stu
 - `js/planner.js`: pure planning functions (`buildPlan`, `missedSessions`, date helpers). No DOM access.
 - `js/chat.js`: pure Hebrew command parser (`applyCommand`) that returns new plan options. No DOM access.
 - `js/data.js`: pure data functions (`fromSample`, `toExport`, `parseImport`). Imports are validated against the shape in `data/schema.json`.
+- `js/search.js`: pure `filterTasks(tasks, query)`: case-insensitive substring match on task title or course. The search box only filters the task list; it is not saved and does not affect the summary or the plan.
 - `data/`: `sample-data.js` (sample student data, dates relative to today), `schema.json` (export/import format), `README.md` (data model in Hebrew). Keep all three in sync when the data model changes.
 - `js/charts.js` (experimental): pure `chartData` plus inline-SVG rendering with a table view. Single-series bars in `--series-1`; text uses text colors, not the series color. Show/table preferences in `localStorage` key `studeniqu.chartsPrefs`.
 - `js/app.js`: state, `localStorage` persistence (key `studeniqu.v1`) and rendering.
