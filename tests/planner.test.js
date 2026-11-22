@@ -180,6 +180,34 @@
     eq(r.availability[1], 2);
   });
 
+  var CH = window.Studeniqu.charts;
+
+  test('charts: data from sample with an approved plan', function () {
+    var s = D.fromSample(SAMPLE, TODAY);
+    s.approvedPlan = P.buildPlan(s.tasks, s.availability, { mode: 'week' }, TODAY);
+    var c = CH.chartData(s, TODAY);
+    eq(c.hoursByDay.length, 7);
+    eq(c.hoursByDay[0].label, 'ראשון');
+    eq(Math.round(c.hoursByDay.reduce(function (a, d) { return a + d.planned; }, 0) * 100) / 100, s.approvedPlan.totalPlanned);
+    c.hoursByDay.forEach(function (d) { ok(d.planned <= d.capacity, 'planned over capacity'); });
+    eq(c.tasksByStatus.map(function (x) { return x.value; }), [4, 1, 1]);
+    eq(c.overdue, 1);
+  });
+
+  test('charts: remaining hours by course, sorted, done and unestimated excluded', function () {
+    var s = { tasks: [
+      task('a', '2026-11-25', 4, { course: 'א' }),
+      task('b', '2026-11-25', 6, { course: 'ב', subtasks: [{ done: true }, { done: false }] }),
+      task('c', '2026-11-25', 5, { course: 'א' }),
+      task('d', '2026-11-25', 9, { course: 'ג', status: 'done' }),
+      task('e', '2026-11-25', null, { course: 'ד' }),
+      task('f', '2026-11-25', 1)
+    ], approvedPlan: null };
+    var c = CH.chartData(s, TODAY);
+    eq(c.remainingByCourse, [{ label: 'א', value: 9 }, { label: 'ב', value: 3 }, { label: 'ללא קורס', value: 1 }]);
+    eq(c.hoursByDay, []);
+  });
+
   var failed = results.filter(function (r) { return !r.ok; }).length;
   var ul = document.getElementById('results');
   results.forEach(function (r) {
