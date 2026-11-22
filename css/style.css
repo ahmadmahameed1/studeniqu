@@ -99,6 +99,8 @@ input:focus { outline: 2px solid var(--primary); outline-offset: 1px; }
 .avail-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-top: 8px; }
 .avail-grid label { align-items: center; text-align: center; }
 .avail-grid input { width: 100%; text-align: center; }
+.avail-total { margin: 8px 0 0; font-size: .9rem; }
+.avail-total strong { color: var(--text); }
 
 .plan-controls { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
 

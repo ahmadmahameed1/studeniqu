@@ -221,6 +221,17 @@
     eq(c.hoursByDay, []);
   });
 
+  test('weekly hours: sums all seven days', function () {
+    eq(P.weeklyHours(AVAIL), 17);
+    eq(P.weeklyHours({ 0: 1.5, 1: 2.25, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 }), 3.75);
+  });
+
+  test('weekly hours: missing, negative or invalid values count as zero', function () {
+    eq(P.weeklyHours({}), 0);
+    eq(P.weeklyHours(null), 0);
+    eq(P.weeklyHours({ 0: 2, 1: -3, 2: 'abc', 6: '4' }), 6);
+  });
+
   var failed = results.filter(function (r) { return !r.ok; }).length;
   var ul = document.getElementById('results');
   results.forEach(function (r) {

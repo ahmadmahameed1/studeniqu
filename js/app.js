@@ -201,9 +201,15 @@
         onchange: function (e) {
           var v = Math.min(24, Math.max(0, Number(e.target.value) || 0));
           state.availability[wd] = v; e.target.value = v; save();
+          renderWeeklyTotal();
         } });
       box.appendChild(el('label', null, [document.createTextNode(name), input]));
     });
+    renderWeeklyTotal();
+  }
+
+  function renderWeeklyTotal() {
+    $('avail-total').textContent = P.weeklyHours(state.availability);
   }
 
   /* ---------- plans ---------- */

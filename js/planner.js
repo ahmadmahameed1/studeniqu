@@ -39,6 +39,16 @@
     return task.status !== 'done' && !!task.due && task.due < todayISO;
   }
 
+  /* Total free study hours in a week (days 0-6). Missing or invalid values count as 0. */
+  function weeklyHours(availability) {
+    var sum = 0;
+    for (var wd = 0; wd < 7; wd++) {
+      var v = Number((availability || {})[wd]);
+      if (v > 0) sum += v;
+    }
+    return round(sum);
+  }
+
   /* Whole days from todayISO to iso (negative when iso is in the past). */
   function daysUntil(iso, todayISO) {
     return Math.round((parseISO(iso) - parseISO(todayISO)) / 86400000);
@@ -148,6 +158,7 @@
     isOverdue: isOverdue,
     daysUntil: daysUntil,
     dueLabel: dueLabel,
+    weeklyHours: weeklyHours,
     defaultOptions: defaultOptions,
     buildPlan: buildPlan,
     missedSessions: missedSessions
